@@ -11,14 +11,13 @@ import torchvision.models as models
 import torchvision.transforms as trans
 from boundary_attack_simple import boundary_attack
 
-parser = argparse.ArgumentParser(description='Runs decision-based attack in either RGB space or LF-DCT space')
+parser = argparse.ArgumentParser(description='Runs decision-based attack in RGB or LF-DCT space')
 parser.add_argument('--data_root', type=str, required=True, help='root directory of imagenet data')
 parser.add_argument('--result_dir', type=str, default='save', help='directory for saving results')
 parser.add_argument('--model', type=str, default='resnet50', help='type of base model to use')
 parser.add_argument('--num_runs', type=int, default=1000, help='number of repeated runs')
 parser.add_argument('--batch_size', type=int, default=50, help='batch size for parallel runs')
 parser.add_argument('--num_steps', type=int, default=30000, help='maximum number of iterations')
-parser.add_argument('--log_every', type=int, default=1, help='log every n iterations')
 parser.add_argument('--defense', type=str, default='none', help='type of transformation defense')
 parser.add_argument('--perturb_mode', type=str, default='gaussian', help='type of spherical perturbation sample (gaussian/dct)')
 parser.add_argument('--spherical_step', type=float, default=0.01, help='spherical step size')

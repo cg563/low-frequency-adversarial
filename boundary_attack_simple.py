@@ -9,9 +9,9 @@ import defenses
 
 def boundary_attack(
     model, images, labels, targeted=False, init=None, max_iters=1000, spherical_step=0.01,
-    source_step=0.01, step_adaptation=1.5, log_every=1, reset_step_every=50, repeat_trials=1,
-    transformation=None, dataset_name='imagenet', blended_noise=False, dct_mode='none',
-    dct_ratio=1.0, repeat_images=1, halve_every=250):
+    source_step=0.01, step_adaptation=1.5, reset_step_every=50, transformation=None,
+    dataset_name='imagenet', blended_noise=False, dct_mode='none', dct_ratio=1.0,
+    repeat_images=1, halve_every=250):
     
     if transformation is None:
         transformation = lambda x: x
@@ -82,22 +82,21 @@ def boundary_attack(
         if source_preds.eq(labels).sum() > 0:
             idx = torch.arange(0, batch_size).long().cuda()[source_preds.eq(labels)]
             candidates[idx] = perturbed[idx]
-        if (i + 1) % log_every == 0:
-            # record some stats
-            perturbed_vec = perturbed.view(batch_size, -1)
-            candidates_vec = candidates.view(batch_size, -1)
-            mse_prev = (images_vec - perturbed_vec).pow(2).mean(1)
-            mse = (images_vec - candidates_vec).pow(2).mean(1)
-            reduction = 100 * (mse_prev.mean() - mse.mean()) / mse_prev.mean()
-            norms = (images_vec - candidates_vec).norm(2, 1)
-            print('Iteration %d:  MSE = %.6f (reduced by %.4f%%), L2 norm = %.4f' % (i + 1, mse.mean(), reduction, norms.mean()))
-        if (i + 1) % reset_step_every == 0:
-            # adjust step size
-            spherical_steps, source_steps, p_spherical, p_source = adjust_step(spherical_succ, source_succ, spherical_steps, source_steps, step_adaptation, dct_mode=dct_mode)
-            spherical_succ.fill_(0)
-            source_succ.fill_(0)
-            print('Spherical success rate = %.4f, new spherical step = %.4f' % (p_spherical.mean(), spherical_steps.mean()))
-            print('Source success rate = %.4f, new source step = %.4f' % (p_source.mean(), source_steps.mean()))
+        # record some stats
+        perturbed_vec = perturbed.view(batch_size, -1)
+        candidates_vec = candidates.view(batch_size, -1)
+        mse_prev = (images_vec - perturbed_vec).pow(2).mean(1)
+        mse = (images_vec - candidates_vec).pow(2).mean(1)
+        reduction = 100 * (mse_prev.mean() - mse.mean()) / mse_prev.mean()
+        norms = (images_vec - candidates_vec).norm(2, 1)
+        print('Iteration %d:  MSE = %.6f (reduced by %.4f%%), L2 norm = %.4f' % (i + 1, mse.mean(), reduction, norms.mean()))
+    if (i + 1) % reset_step_every == 0:
+        # adjust step size
+        spherical_steps, source_steps, p_spherical, p_source = adjust_step(spherical_succ, source_succ, spherical_steps, source_steps, step_adaptation, dct_mode=dct_mode)
+        spherical_succ.fill_(0)
+        source_succ.fill_(0)
+        print('Spherical success rate = %.4f, new spherical step = %.4f' % (p_spherical.mean(), spherical_steps.mean()))
+        print('Source success rate = %.4f, new source step = %.4f' % (p_source.mean(), source_steps.mean()))
         mse_stats[:, i] = mse
         distance_stats[:, i] = norms
         spherical_step_stats[:, i] = spherical_steps
