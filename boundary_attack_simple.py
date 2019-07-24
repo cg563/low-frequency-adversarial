@@ -67,6 +67,7 @@ def boundary_attack(
     source_succ = torch.zeros(batch_size, reset_step_every).cuda()
     spherical_steps = (torch.ones(batch_size) * spherical_step).cuda()
     source_steps = (torch.ones(batch_size) * source_step).cuda()
+    
     for i in range(max_iters):
         candidates, spherical_candidates = generate_candidate(
             images, perturbed, spherical_steps, source_steps, dct_mode=dct_mode, dct_ratio=dct_ratio)
@@ -90,18 +91,21 @@ def boundary_attack(
         reduction = 100 * (mse_prev.mean() - mse.mean()) / mse_prev.mean()
         norms = (images_vec - candidates_vec).norm(2, 1)
         print('Iteration %d:  MSE = %.6f (reduced by %.4f%%), L2 norm = %.4f' % (i + 1, mse.mean(), reduction, norms.mean()))
-    if (i + 1) % reset_step_every == 0:
-        # adjust step size
-        spherical_steps, source_steps, p_spherical, p_source = adjust_step(spherical_succ, source_succ, spherical_steps, source_steps, step_adaptation, dct_mode=dct_mode)
-        spherical_succ.fill_(0)
-        source_succ.fill_(0)
-        print('Spherical success rate = %.4f, new spherical step = %.4f' % (p_spherical.mean(), spherical_steps.mean()))
-        print('Source success rate = %.4f, new source step = %.4f' % (p_source.mean(), source_steps.mean()))
+        
+        if (i + 1) % reset_step_every == 0:
+            # adjust step size
+            spherical_steps, source_steps, p_spherical, p_source = adjust_step(spherical_succ, source_succ, spherical_steps, source_steps, step_adaptation, dct_mode=dct_mode)
+            spherical_succ.fill_(0)
+            source_succ.fill_(0)
+            print('Spherical success rate = %.4f, new spherical step = %.4f' % (p_spherical.mean(), spherical_steps.mean()))
+            print('Source success rate = %.4f, new source step = %.4f' % (p_source.mean(), source_steps.mean()))
+            
         mse_stats[:, i] = mse
         distance_stats[:, i] = norms
         spherical_step_stats[:, i] = spherical_steps
         source_step_stats[:, i] = source_steps
         perturbed = candidates
+        
         if halve_every > 0 and perturbed.size(0) > batch_size and (i + 1) % halve_every == 0:
             # apply Hyperband to cut unsuccessful branches
             num_repeats = int(batch_size / batch_size)

@@ -24,7 +24,7 @@ parser.add_argument('--spherical_step', type=float, default=0.01, help='spherica
 parser.add_argument('--source_step', type=float, default=0.01, help='source step size')
 parser.add_argument('--repeat_images', type=int, default=1, help='number of repetitions for successive halving when using Hyperband')
 parser.add_argument('--halve_every', type=int, default=250, help='number of iterations before successive halving when using Hyperband')
-parser.add_argument('--dct_ratio', type=float, default=0.03125, help='ratio of nonzero frequencies for dct')
+parser.add_argument('--dct_ratio', type=float, default=1.0, help='ratio of nonzero frequencies for dct')
 parser.add_argument('--blended_noise', action='store_true', help='interpolate between initial noise and target image to form starting point')
 parser.add_argument('--save_suffix', type=str, default='', help='suffix appended to save file')
 args = parser.parse_args()
@@ -45,8 +45,6 @@ elif args.defense == 'jpeg':
     trans = lambda x: defenses.jpeg_torch()(x)
 elif args.defense == 'bit':
     trans = lambda x: defenses.bit_reduction_torch()(x)
-elif args.defense == 'tv':
-    trans = lambda x: defenses.tv_torch()(x)
 dct_mode = (args.perturb_mode == 'dct')
 
 # load previously sampled set of images
