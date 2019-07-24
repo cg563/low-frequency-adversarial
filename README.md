@@ -17,11 +17,11 @@ python run_dba_simple.py --data_root <imagenet_root> --num_runs 1000 --num_steps
 ```
 To run LF-BA with fixed frequency ratio r:
 ```
-python run_dba_simple.py --data_root <imagenet_root> --num_runs 1000 --num_steps 30000 --defense <defense> --perturb_mode dct --dct_ratio <dct_ratio> --blended_noise
+python run_dba_simple.py --data_root <imagenet_root> --num_runs 1000 --num_steps 30000 --defense <defense> --perturb_mode dct --dct_ratio <dct_ratio> --blended_noise --spherical_step 0.2
 ```
 To run LF-BA using Hyperband to tune the frequency ratio r:
 ```
-python run_dba_simple.py --data_root <imagenet_root> --num_runs 1000 --num_steps 28000 --defense <defense> --perturb_mode dct --dct_ratio <dct_ratio> --blended_noise --repeat_images 4 --halve_every 500
+python run_dba_simple.py --data_root <imagenet_root> --num_runs 1000 --num_steps 28000 --defense <defense> --perturb_mode dct --dct_ratio <dct_ratio> --blended_noise --spherical_step 0.2 --repeat_images 4 --halve_every 500
 ```
 which starts with 4 parallel runs using frequency ratios r, 2r, 4r, 8r, halving every 500 iterations. With 28000 steps, this amounts to a total of 30000 model queries.
 
