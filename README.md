@@ -24,3 +24,5 @@ To run LF-BA using Hyperband to tune the frequency ratio r:
 python run_dba_simple.py --data_root <imagenet_root> --num_runs 1000 --num_steps 28000 --defense <defense> --perturb_mode dct --dct_ratio <dct_ratio> --blended_noise --repeat_images 4 --halve_every 500
 ```
 which starts with 4 parallel runs using frequency ratios r, 2r, 4r, 8r, halving every 500 iterations. With 28000 steps, this amounts to a total of 30000 model queries.
+
+Our code also contains two useful utility functions for sampling low frequency random perturbations: utils.sample_gaussian_torch and utils.sample_gaussian_tf, for use with PyTorch and Tensorflow. Any black-box attack that relies on sampling Gaussian noise can be modified to do low frequency perturbation using the two sampling functions.
