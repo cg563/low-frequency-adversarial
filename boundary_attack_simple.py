@@ -83,6 +83,9 @@ def boundary_attack(
         if source_preds.eq(labels).sum() > 0:
             idx = torch.arange(0, batch_size).long().cuda()[source_preds.eq(labels)]
             candidates[idx] = perturbed[idx]
+        # reject moves if MSE is already low enough
+        if i > 0:
+            candidates[mse_prev.lt(1e-6)] = perturbed[mse_prev.lt(1e-6)]
         # record some stats
         perturbed_vec = perturbed.view(batch_size, -1)
         candidates_vec = candidates.view(batch_size, -1)
