@@ -1,7 +1,7 @@
 This repository contains code for the UAI 2019 paper:
 
-Chuan Guo, Jared S. Frank,Kilian Q. Weinberger. Low Frequency Adversarial Perturbation.
-https://arxiv.org/abs/1809.08758
+Chuan Guo, Jared S. Frank, Kilian Q. Weinberger. Low Frequency Adversarial Perturbation.
+UAI 2019. https://arxiv.org/abs/1809.08758
 
 Our code uses PyTorch (pytorch >= 0.4.1, torchvision >= 0.2.1) with CUDA 9.0 and Python 3.5.
 
